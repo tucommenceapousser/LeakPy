@@ -1,6 +1,6 @@
 # LeakPy
 
-LeakPy is a client program to interact with leakix.com API with Python. 
+LeakPy is a client program to interact with leakix.net API with Python. 
 
 It's just a test since it's displaying PROTOCOL + IP + PORT because API is quite complex.
 
