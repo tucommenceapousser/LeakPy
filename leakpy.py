@@ -36,7 +36,7 @@ def main():
         api_key = open(api_key_file,"r").read().strip()
          
     except: 
-        api_key = 0
+        api_key = list()
     
     if not api_file and len(api_key) == 0 :
         api_key = input("Please Specify your API Key (leave blank if you don't have) : ")
