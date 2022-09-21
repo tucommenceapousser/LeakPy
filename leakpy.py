@@ -23,6 +23,55 @@ console = Console()
 api_key_file = ".api.txt"
 
 
+def get_plugins():
+    plugins = [
+        "ApacheStatusHttpPlugin",
+        "BitbucketPlugin",
+        "CheckMkPlugin" "CiscoRV",
+        "ConfigJsonHttp",
+        "ConfluenceVersionIssue",
+        "Consul",
+        "CouchDbOpenPlugin" "DeadMon",
+        "DockerRegistryHttpPlugin",
+        "DotDsStoreOpenPlugin",
+        "DotEnvConfigPlugin",
+        "ElasticSearchOpenPlugin",
+        "ExchangeVersion",
+        "GitConfigHttpPlugin",
+        "GrafanaOpenPlugin",
+        "HiSiliconDVR",
+        "HttpNTLM",
+        "JenkinsOpenPlugin",
+        "JiraPlugin",
+        "KafkaOpenPlugin",
+        "LaravelTelescopeHttpPlugin",
+        "Log4JOpportunistic",
+        "MetabaseHttpPlugin",
+        "MongoOpenPlugin",
+        "MysqlOpenPlugin",
+        "PaloAltoPlugin",
+        "PhpInfoHttpPlugin",
+        "PhpStdinPlugin",
+        "ProxyOpenPlugin",
+        "QnapVersion",
+        "RedisOpenPlugin",
+        "SmbPlugin",
+        "SonarQubePlugin",
+        "SonicWallSMAPlugin",
+        "SophosPlugin",
+        "SymfonyProfilerPlugin",
+        "SymfonyVerbosePlugin",
+        "TraversalHttpPlugin",
+        "veeaml9",
+        "WpUserEnumHttp",
+        "YiiDebugPlugin",
+        "ZimbraPlugin",
+        "ZookeeperOpenPlugin",
+        "ZyxelVersion",
+    ]
+    return plugins
+
+
 def check_output(result):
     if args.output and len(result) != 0:
         with open(args.output, "w") as f:
@@ -36,6 +85,20 @@ def check_output(result):
 
 
 def main():
+
+    plugins = get_plugins()
+
+    if args.plugin:
+        if args.plugin in plugins:
+            args.query = f"+plugin:{args.plugin}"
+        else:
+            console.print("\n[bold red][X] Plugin is not valid")
+            console.print(f"[bold yellow][!] Plugins available : {len(plugins)}\n")
+            for plugin in plugins:
+                console.print(f"[bold cyan][+] {plugin}")
+            print()
+            sys.exit(1)
+
     api_file = exists(api_key_file)
 
     try:
@@ -70,7 +133,7 @@ def main():
 
         params = {
             "page": f"{page}",
-            "q": f"+plugin:{args.plugin} {args.query}",
+            "q": f"{args.query}",
             "scope": f"{args.scope}",
         }
 
@@ -108,7 +171,9 @@ def main():
                 for json_data in range(1, len(data)):
                     protocol = f"{data[json_data]['protocol']}://"
                     protocol = (
-                        protocol if protocol == "http://" or protocol == "https://" else ""
+                        protocol
+                        if protocol == "http://" or protocol == "https://"
+                        else ""
                     )
                     ip = data[json_data]["ip"]
                     port = data[json_data]["port"]
@@ -120,7 +185,7 @@ def main():
                     console.print(f"[bold blue][+] {tmp_target}")
                     result_prompt = result.append(tmp_target)
             except:
-                pass 
+                pass
 
             tmp.clear()
 
