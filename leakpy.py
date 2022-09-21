@@ -60,6 +60,7 @@ def main():
         console.print("\n[bold green][+] Using API Key for queries...\n")
 
     result = list()
+    tmp = list()
     for page in range(0, int(args.pages)):
 
         headers = {
@@ -112,14 +113,14 @@ def main():
                 ip = data[json_data]["ip"]
                 port = data[json_data]["port"]
                 target = f"{protocol}{ip}:{port}"
-                result_prompt = result.append(target)
-                
-        print_result = list(dict.fromkeys(result))
-        
-        for targets in print_result:
-            console.print(f"[bold blue][+] {targets}")
-            
-        print_result.clear()
+                tmp_result = tmp.append(target)
+
+            tmp = list(dict.fromkeys(tmp))
+            for tmp_target in tmp:
+                console.print(f"[bold blue][+] {tmp_target}")
+                result_prompt = result.append(tmp_target)
+            tmp.clear()
+
         console.print("\n")
         time.sleep(1.9)
 
