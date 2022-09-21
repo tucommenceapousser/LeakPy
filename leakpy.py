@@ -104,21 +104,24 @@ def main():
                 )
                 check_output(result)
                 break
+            try:
+                for json_data in range(1, len(data)):
+                    protocol = f"{data[json_data]['protocol']}://"
+                    protocol = (
+                        protocol if protocol == "http://" or protocol == "https://" else ""
+                    )
+                    ip = data[json_data]["ip"]
+                    port = data[json_data]["port"]
+                    target = f"{protocol}{ip}:{port}"
+                    tmp_result = tmp.append(target)
 
-            for json_data in range(1, len(data)):
-                protocol = f"{data[json_data]['protocol']}://"
-                protocol = (
-                    protocol if protocol == "http://" or protocol == "https://" else ""
-                )
-                ip = data[json_data]["ip"]
-                port = data[json_data]["port"]
-                target = f"{protocol}{ip}:{port}"
-                tmp_result = tmp.append(target)
+                tmp = list(dict.fromkeys(tmp))
+                for tmp_target in tmp:
+                    console.print(f"[bold blue][+] {tmp_target}")
+                    result_prompt = result.append(tmp_target)
+            except:
+                pass 
 
-            tmp = list(dict.fromkeys(tmp))
-            for tmp_target in tmp:
-                console.print(f"[bold blue][+] {tmp_target}")
-                result_prompt = result.append(tmp_target)
             tmp.clear()
 
         console.print("\n")
