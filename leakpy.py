@@ -37,6 +37,7 @@ def get_plugins():
         "DotEnvConfigPlugin",
         "ElasticSearchOpenPlugin",
         "ExchangeVersion",
+        "FortiOSPlugin",
         "GitConfigHttpPlugin",
         "GrafanaOpenPlugin",
         "HiSiliconDVR",
