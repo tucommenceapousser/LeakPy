@@ -91,7 +91,7 @@ def main():
 
     if args.plugin:
         if args.plugin in plugins:
-            args.query = f"+plugin:{args.plugin}"
+            args.query += f" +plugin:{args.plugin}"
         else:
             console.print("\n[bold red][X] Plugin is not valid")
             console.print(f"[bold yellow][!] Plugins available : {len(plugins)}\n")
