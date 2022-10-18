@@ -1,9 +1,11 @@
+#!/usr/bin/python3
+
 import sys
 import json
 import time
 import requests
 import argparse
-from os.path import exists
+from os.path import exists, expanduser
 from rich.console import Console
 
 
@@ -20,7 +22,7 @@ args = parser.parse_args()
 console = Console()
 
 
-api_key_file = ".api.txt"
+api_key_file = expanduser('~') + "/.local/.api.txt"
 
 
 def get_plugins():
