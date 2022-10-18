@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: leakpy
-Version: 0.2
+Version: 0.3
 Summary: LeakIX API Client 
 Home-page: https://github.com/Chocapikk/LeakPy
 Author: Valentin Lobstein
@@ -14,6 +14,18 @@ Description-Content-Type: text/markdown
 LeakPy is a client program to interact with leakix.net API with Python. 
 
 It's just a test since it's displaying PROTOCOL + IP + PORT because API is quite complex.
+
+
+
+## Download it from Pypi (pip)
+
+
+```bash
+
+pip install leakpy
+
+
+```
 
 
 ## Use

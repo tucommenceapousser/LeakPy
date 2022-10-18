@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='leakpy',  
-     version='0.2',
+     version='0.3',
      scripts=['leakpy'] ,
      author="Valentin Lobstein",
      author_email="balgogan@protonmail.com",
