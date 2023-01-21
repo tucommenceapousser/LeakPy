@@ -176,12 +176,9 @@ def main():
             except:
                 pass
             tmp.clear()
-            console.print("\n")
+            time.sleep(1.1)
+        console.print("\n")
     check_output(result)
                        
-
-
-
 if __name__ == "__main__":
     main()
-
