@@ -29,14 +29,14 @@ def get_plugins():
     plugins = [
         "ApacheStatusHttpPlugin",
         "BitbucketPlugin",
-    	"CentosWebPanelPlugin",
+        "CentosWebPanelPlugin",
         "CheckMkPlugin",
-    	"CiscoRV",
+        "CiscoRV",
         "ConfigJsonHttp",
         "ConfluenceVersionIssue",
         "Consul",
         "CouchDbOpenPlugin",
-    	"DeadMon",
+        "DeadMon",
         "DockerRegistryHttpPlugin",
         "DotDsStoreOpenPlugin",
         "DotEnvConfigPlugin",
@@ -59,7 +59,7 @@ def get_plugins():
         "PhpInfoHttpPlugin",
         "PhpStdinPlugin",
         "ProxyOpenPlugin",
-    	"PulseConnectPlugin",
+        "PulseConnectPlugin",
         "QnapVersion",
         "RedisOpenPlugin",
         "SmbPlugin",
@@ -70,8 +70,8 @@ def get_plugins():
         "SymfonyVerbosePlugin",
         "TraversalHttpPlugin",
         "veeaml9",
-    	"ViciboxPlugin",
-    	"VsCodeSFTPPlugin",
+        "ViciboxPlugin",
+        "VsCodeSFTPPlugin",
         "WpUserEnumHttp",
         "YiiDebugPlugin",
         "ZimbraPlugin",
@@ -94,7 +94,6 @@ def check_output(result):
 
 
 def main():
-
     plugins = get_plugins()
 
     if args.plugin:
@@ -112,97 +111,77 @@ def main():
 
     try:
         api_key = open(api_key_file, "r").read().strip()
-
     except:
         api_key = list()
 
     if not api_file or len(api_key) != 48:
-        api_key = input(
-            "Please Specify your API Key (leave blank if you don't have) : "
-        )
+        api_key = input("Please Specify your API Key (leave blank if you don't have) : ")
         with open(api_key_file, "w") as f:
             f.write(api_key)
 
     if len(api_key) == 0:
-        console.print(
-            f"\n[bold yellow][!] Querying without API Key...\n (remove or edit {api_key_file} to add API Key if you have)"
-        )
-
+        console.print(f"\n[bold yellow][!] Querying without API Key...\n (remove or edit {api_key_file} to add API Key if you have)")
     else:
         console.print("\n[bold green][+] Using API Key for queries...\n")
 
     result = list()
     tmp = list()
     for page in range(0, int(args.pages)):
-
         headers = {
             "api-key": f"{api_key}",
             "Accept": "application/json",
         }
-
         params = {
             "page": f"{page}",
             "q": f"{args.query}",
             "scope": f"{args.scope}",
         }
-
-        response = requests.get(
-            "https://leakix.net/search", params=params, headers=headers
-        )
+        response = requests.get("https://leakix.net/search", params=params, headers=headers)
 
         if response.text == "null":
-            console.print(
-                "[bold yellow][!] No results available (Please check your query or scope)"
-            )
+            console.print("[bold yellow][!] No results available (Please check your query or scope)")
             check_output(result)
-            break
-
         elif response.text == '{"Error":"Page limit"}':
-            console.print(
-                f"[bold red][X] Error : Page Limit for free users and non users ({page})"
-            )
+            console.print(f"[bold red][X] Error : Page Limit for free users and non users ({page})")
             check_output(result)
-            break
-
         else:
-            console.print(f"[bold green] Query {page + 1} : \n")
-            data = json.loads(response.text)
-
             try:
+                console.print(f"[bold green] Query {page + 1} : \n")
+                data = json.loads(response.text)
+            except: 
+                console.print(f"[bold red][X] JSON can't be parsed, probably page limit result for this plugin")
+                check_output(result)
+
+            try: 
                 exist = data[1]["protocol"]
             except:
-                console.print(
-                    f"[bold red][X] Error : You're not allowed to use this plugin ({args.plugin})\n"
-                )
+                console.print(f"[bold red][X] Error : You're not allowed to use this plugin ({args.plugin})\n")
                 check_output(result)
-                break
+
             try:
                 for json_data in range(1, len(data)):
                     protocol = f"{data[json_data]['protocol']}://"
                     protocol = (
-                        protocol
-                        if protocol == "http://" or protocol == "https://"
-                        else ""
+                        protocol if protocol == "http://" or protocol == "https://"
+                    else ""
                     )
                     ip = data[json_data]["ip"]
                     port = data[json_data]["port"]
                     target = f"{protocol}{ip}:{port}"
                     tmp_result = tmp.append(target)
-
                 tmp = list(dict.fromkeys(tmp))
                 for tmp_target in tmp:
                     console.print(f"[bold blue][+] {tmp_target}")
                     result_prompt = result.append(tmp_target)
             except:
                 pass
-
             tmp.clear()
-
-        console.print("\n")
-        time.sleep(1.9)
-
+            console.print("\n")
     check_output(result)
+                       
+
 
 
 if __name__ == "__main__":
     main()
+
