@@ -11,12 +11,12 @@ from rich.console import Console
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "-s", "--scope", choices=["service", "leak"], help="Type Of Informations"
+    "-s", "--scope", choices=["service", "leak"], help="Type Of Informations", type=str
 )
-parser.add_argument("-p", "--pages", help="Number Of Pages", default="2")
-parser.add_argument("-q", "--query", help="Specify The Query", default="")
-parser.add_argument("-P", "--plugin", help="Specify The Plugin")
-parser.add_argument("-o", "--output", help="Output File")
+parser.add_argument("-p", "--pages", help="Number Of Pages", default=2, type=int)
+parser.add_argument("-q", "--query", help="Specify The Query", default="", type=str)
+parser.add_argument("-P", "--plugin", help="Specify The Plugin", type=str)
+parser.add_argument("-o", "--output", help="Output File", type=str)
 args = parser.parse_args()
 
 console = Console()
@@ -29,8 +29,8 @@ def get_plugins():
     plugins = [
         "ApacheStatusHttpPlugin",
         "BitbucketPlugin",
-        "CentosWebPanelPlugin",
-        "CheckMkPlugin",
+        "CentosWebPanelPlugin"
+        "CheckMkPlugin", 
         "CiscoRV",
         "ConfigJsonHttp",
         "ConfluenceVersionIssue",
@@ -41,9 +41,11 @@ def get_plugins():
         "DotDsStoreOpenPlugin",
         "DotEnvConfigPlugin",
         "ElasticSearchOpenPlugin",
+        "EsxVersionPlugin",
         "ExchangeVersion",
         "FortiOSPlugin",
         "GitConfigHttpPlugin",
+        "GoAnywhereMFT",
         "GrafanaOpenPlugin",
         "HiSiliconDVR",
         "HttpNTLM",
@@ -73,6 +75,7 @@ def get_plugins():
         "ViciboxPlugin",
         "VsCodeSFTPPlugin",
         "WpUserEnumHttp",
+        "Wso2Plugin",
         "YiiDebugPlugin",
         "ZimbraPlugin",
         "ZookeeperOpenPlugin",
@@ -94,6 +97,7 @@ def check_output(result):
 
 
 def main():
+
     plugins = get_plugins()
 
     if args.plugin:
@@ -111,74 +115,97 @@ def main():
 
     try:
         api_key = open(api_key_file, "r").read().strip()
+
     except:
         api_key = list()
 
     if not api_file or len(api_key) != 48:
-        api_key = input("Please Specify your API Key (leave blank if you don't have) : ")
+        api_key = input(
+            "Please Specify your API Key (leave blank if you don't have) : "
+        )
         with open(api_key_file, "w") as f:
             f.write(api_key)
 
     if len(api_key) == 0:
-        console.print(f"\n[bold yellow][!] Querying without API Key...\n (remove or edit {api_key_file} to add API Key if you have)")
+        console.print(
+            f"\n[bold yellow][!] Querying without API Key...\n (remove or edit {api_key_file} to add API Key if you have)"
+        )
+
     else:
         console.print("\n[bold green][+] Using API Key for queries...\n")
 
     result = list()
     tmp = list()
-    for page in range(0, int(args.pages)):
+    for page in range(0, args.pages):
+
         headers = {
             "api-key": f"{api_key}",
             "Accept": "application/json",
         }
+
         params = {
             "page": f"{page}",
             "q": f"{args.query}",
             "scope": f"{args.scope}",
         }
-        response = requests.get("https://leakix.net/search", params=params, headers=headers)
+
+        response = requests.get(
+            "https://leakix.net/search", params=params, headers=headers
+        )
 
         if response.text == "null":
-            console.print("[bold yellow][!] No results available (Please check your query or scope)")
+            console.print(
+                "[bold yellow][!] No results available (Please check your query or scope)"
+            )
             check_output(result)
-        elif response.text == '{"Error":"Page limit"}':
-            console.print(f"[bold red][X] Error : Page Limit for free users and non users ({page})")
-            check_output(result)
-        else:
-            try:
-                console.print(f"[bold green] Query {page + 1} : \n")
-                data = json.loads(response.text)
-            except: 
-                console.print(f"[bold red][X] JSON can't be parsed, probably page limit result for this plugin")
-                check_output(result)
+            break
 
-            try: 
+        elif response.text == '{"Error":"Page limit"}':
+            console.print(
+                f"[bold red][X] Error : Page Limit for free users and non users ({page})"
+            )
+            check_output(result)
+            break
+
+        else:
+            console.print(f"[bold green] Query {page + 1} : \n")
+            data = json.loads(response.text)
+
+            try:
                 exist = data[1]["protocol"]
             except:
-                console.print(f"[bold red][X] Error : You're not allowed to use this plugin ({args.plugin})\n")
+                console.print(
+                    f"[bold red][X] Error : You're not allowed to use this plugin ({args.plugin})\n"
+                )
                 check_output(result)
-
+                break
             try:
                 for json_data in range(1, len(data)):
                     protocol = f"{data[json_data]['protocol']}://"
                     protocol = (
-                        protocol if protocol == "http://" or protocol == "https://"
-                    else ""
+                        protocol
+                        if protocol == "http://" or protocol == "https://"
+                        else ""
                     )
                     ip = data[json_data]["ip"]
                     port = data[json_data]["port"]
                     target = f"{protocol}{ip}:{port}"
                     tmp_result = tmp.append(target)
+
                 tmp = list(dict.fromkeys(tmp))
                 for tmp_target in tmp:
                     console.print(f"[bold blue][+] {tmp_target}")
                     result_prompt = result.append(tmp_target)
             except:
                 pass
+
             tmp.clear()
-            time.sleep(1.1)
+
         console.print("\n")
+        time.sleep(1.9)
+
     check_output(result)
-                       
+
+
 if __name__ == "__main__":
     main()
